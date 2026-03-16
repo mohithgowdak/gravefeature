@@ -1,26 +1,32 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #f3f3f3;
+  --foreground: #000000;
+  --accent: #eab308;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  .neo-card {
+    @apply border-[3px] border-black bg-white p-5 shadow-brutal;
+  }
+
+  .neo-yellow {
+    @apply border-[3px] border-black bg-accent p-4 shadow-brutal;
+  }
+
+  .neo-button {
+    @apply border-[3px] border-black bg-accent px-4 py-2 font-black uppercase shadow-brutal transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .neo-input {
+    @apply w-full border-[3px] border-black bg-white px-3 py-2 font-medium outline-none focus:bg-yellow-50;
+  }
 }
