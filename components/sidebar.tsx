@@ -52,8 +52,15 @@ export function Sidebar() {
           </button>
         </div>
 
-        {isMobileOpen && (
-          <nav className="mt-3 space-y-4">
+        <nav
+          aria-hidden={!isMobileOpen}
+          className={`grid transition-all duration-300 ease-out ${
+            isMobileOpen
+              ? "mt-3 grid-rows-[1fr] opacity-100"
+              : "mt-0 grid-rows-[0fr] opacity-0 pointer-events-none"
+          }`}
+        >
+          <div className="space-y-4 overflow-hidden">
             <div className="space-y-2">
               <p className="border-2 border-black bg-black px-2 py-1 text-[10px] font-black uppercase text-accent">
                 🛠️ Feature Forensics
@@ -70,8 +77,8 @@ export function Sidebar() {
                 <NavLink key={link.href} href={link.href} label={link.label} />
               ))}
             </div>
-          </nav>
-        )}
+          </div>
+        </nav>
       </aside>
 
       <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r-[3px] border-black bg-white p-5 lg:block">
