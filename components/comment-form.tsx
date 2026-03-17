@@ -1,15 +1,38 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { CommunityComment } from "@/lib/types";
 
 interface CommentFormProps {
   fatalityId: number;
+  initialComments: CommunityComment[];
 }
 
-export function CommentForm({ fatalityId }: CommentFormProps) {
+function formatUtcTimestamp(value?: string) {
+  if (!value) {
+    return "Just now";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Just now";
+  }
+
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC`;
+}
+
+export function CommentForm({ fatalityId, initialComments }: CommentFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
+  const [comments, setComments] = useState<CommunityComment[]>(initialComments);
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,6 +57,11 @@ export function CommentForm({ fatalityId }: CommentFormProps) {
         throw new Error("Unable to submit your comment.");
       }
 
+      const payload = await response.json();
+      if (payload?.comment) {
+        setComments((prev) => [payload.comment as CommunityComment, ...prev]);
+      }
+
       setName("");
       setEmail("");
       setComment("");
@@ -48,7 +76,7 @@ export function CommentForm({ fatalityId }: CommentFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="neo-card space-y-4">
+    <form onSubmit={onSubmit} className="neo-card space-y-4 text-black">
       <h3 className="text-xl font-black uppercase">Community POV</h3>
       <div className="grid gap-3 md:grid-cols-2">
         <input
@@ -77,7 +105,28 @@ export function CommentForm({ fatalityId }: CommentFormProps) {
       <button className="neo-button" disabled={isSubmitting} type="submit">
         {isSubmitting ? "Posting..." : "Post Analysis"}
       </button>
-      {message && <p className="text-sm font-semibold">{message}</p>}
+      {message && <p className="text-sm font-semibold text-black">{message}</p>}
+
+      <div className="space-y-3 border-t-[3px] border-black pt-4">
+        <h4 className="text-sm font-black uppercase">
+          Community Notes ({comments.length})
+        </h4>
+        {comments.length === 0 ? (
+          <p className="text-sm font-medium text-black">No comments yet. Be the first to share a diagnosis.</p>
+        ) : (
+          comments.map((item) => (
+            <article key={item.id} className="border-2 border-black bg-white p-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-black text-black">{item.name}</p>
+                <p className="text-xs font-semibold text-black">
+                  {formatUtcTimestamp(item.created_at)}
+                </p>
+              </div>
+              <p className="mt-2 text-sm font-medium text-black">{item.comment}</p>
+            </article>
+          ))
+        )}
+      </div>
     </form>
   );
 }

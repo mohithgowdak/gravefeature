@@ -3,6 +3,7 @@ import { Fatality } from "@/lib/types";
 export const sampleFatalities: Fatality[] = [
   {
     id: 1,
+    type: "feature",
     title: "The Personalized AI Shopping Assistant That Burned Too Fast",
     brand: "CartPilot",
     sector: "Retail Tech",
@@ -46,9 +47,14 @@ export const sampleFatalities: Fatality[] = [
     author_role: "Growth PM",
     is_ai_victim: true,
     status: "published",
+    project_vision: null,
+    resources_burned: null,
+    reality_check: null,
+    missed_pivot: null,
   },
   {
     id: 2,
+    type: "feature",
     title: "Smart Fleet Forecasting With No Buyer Champion",
     brand: "RoutePulse",
     sector: "Logistics",
@@ -91,5 +97,62 @@ export const sampleFatalities: Fatality[] = [
     author_role: "Student Researcher",
     is_ai_victim: false,
     status: "published",
+    project_vision: null,
+    resources_burned: null,
+    reality_check: null,
+    missed_pivot: null,
+  },
+  {
+    id: 3,
+    type: "project",
+    title: "The Social Audio Network That Mistook Novelty for Moat",
+    brand: "EchoRooms",
+    sector: "Social",
+    product_type: "Community Platform",
+    total_loss: "$95M",
+    start_year: 2020,
+    end_year: 2024,
+    intro_text:
+      "EchoRooms scaled quickly during a hype cycle but failed to build durable creator economics once audience novelty dropped.",
+    failure_analysis:
+      "Synchronous engagement spiked early, then collapsed as users returned to established social products with larger graphs.",
+    market_analysis:
+      "Competitors copied the audio format and distributed it through existing ecosystems, removing switching incentives.",
+    startup_learnings:
+      "Format innovation is not defensible unless paired with distribution lock-in and clear creator monetization.",
+    market_potential:
+      "Still strong in vertical communities where expertise and trust sustain recurring participation.",
+    difficulty: "High",
+    scalability:
+      "Medium with focused vertical rollout and retention-led product loops.",
+    pivot_concept:
+      "Pivot to paid expert circles with searchable replays and recurring cohort programming.",
+    execution_plan: [
+      {
+        step: "Narrow Audience",
+        detail: "Focus on three high-intent vertical communities.",
+      },
+      {
+        step: "Creator Revenue",
+        detail: "Add subscriptions, tips, and paid series support.",
+      },
+      {
+        step: "Asynchronous Value",
+        detail: "Ship transcripts and searchable replay archives.",
+      },
+    ],
+    monetization_strategy: "Paid circles + creator tooling + enterprise community plans.",
+    suggested_tech: ["Next.js", "Supabase", "Node.js", "Redis", "PostHog"],
+    author_name: "Maya Trent",
+    author_role: "Founder",
+    is_ai_victim: false,
+    status: "draft",
+    project_vision:
+      "Build the default social operating system for live, voice-first community learning.",
+    resources_burned: "4 years, 82 team members, and $95M in capital.",
+    reality_check:
+      "Once incumbents copied core rooms, we had no retention moat and no creator payout engine.",
+    missed_pivot:
+      "We should have moved to vertical paid cohorts eighteen months earlier.",
   },
 ];

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAdminCookieName, isValidAdminSession } from "@/lib/admin-auth";
-import { publishFatality } from "@/lib/supabase";
+import { updateFatalityById } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
@@ -21,14 +21,17 @@ export async function PATCH(request: NextRequest, { params }: RouteProps) {
       return NextResponse.json({ ok: false, message: "Invalid id" }, { status: 400 });
     }
 
-    await publishFatality(id);
+    const body = await request.json();
+    await updateFatalityById(id, body);
+
     revalidatePath("/");
     revalidatePath("/database-view");
     revalidatePath("/admin/review");
+    revalidatePath(`/fatalities/${id}`);
+
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to publish fatality";
+    const message = error instanceof Error ? error.message : "Failed to update submission";
     return NextResponse.json({ ok: false, message }, { status: 500 });
   }
 }

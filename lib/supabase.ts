@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { sampleFatalities } from "@/lib/sample-data";
-import { CommentInput, Fatality } from "@/lib/types";
+import { CommentInput, CommunityComment, Fatality } from "@/lib/types";
 
 function isPlaceholder(value?: string) {
   if (!value) return true;
@@ -75,6 +75,26 @@ export async function getFatalities(): Promise<Fatality[]> {
   return data as Fatality[];
 }
 
+export async function getAiDeathWatchFatalities(): Promise<Fatality[]> {
+  const client = getClient();
+  if (!client) {
+    return sampleFatalities.filter((item) => item.is_ai_victim && item.status === "published");
+  }
+
+  const { data, error } = await client
+    .from("fatalities")
+    .select("*")
+    .eq("status", "published")
+    .eq("is_ai_victim", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return [];
+  }
+
+  return (data ?? []) as Fatality[];
+}
+
 export async function getDraftFatalities(): Promise<Fatality[]> {
   const adminClient = getAdminClient();
   if (!adminClient) {
@@ -117,6 +137,25 @@ export async function getFatalityById(id: number): Promise<Fatality | null> {
   return data as Fatality;
 }
 
+export async function getFatalityByIdForAdmin(id: number): Promise<Fatality | null> {
+  const adminClient = getAdminClient();
+  if (!adminClient) {
+    return sampleFatalities.find((item) => item.id === id) ?? null;
+  }
+
+  const { data, error } = await adminClient
+    .from("fatalities")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data as Fatality;
+}
+
 export async function createFatality(input: Partial<Fatality>) {
   const client = getClient();
   if (!client) {
@@ -133,14 +172,37 @@ export async function createFatality(input: Partial<Fatality>) {
 export async function createComment(input: CommentInput) {
   const client = getClient();
   if (!client) {
-    return { ok: true, mode: "local-fallback" as const };
+    return { ok: true, mode: "local-fallback" as const, data: null as CommunityComment | null };
   }
 
-  const { error } = await client.from("community_comments").insert(input);
+  const { data, error } = await client
+    .from("community_comments")
+    .insert(input)
+    .select("*")
+    .single();
   if (error) {
     throw new Error(error.message);
   }
-  return { ok: true, mode: "supabase" as const };
+  return { ok: true, mode: "supabase" as const, data: data as CommunityComment };
+}
+
+export async function getCommentsByFatalityId(fatalityId: number): Promise<CommunityComment[]> {
+  const client = getAdminClient() ?? getClient();
+  if (!client) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("community_comments")
+    .select("*")
+    .eq("fatality_id", fatalityId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return [];
+  }
+
+  return (data ?? []) as CommunityComment[];
 }
 
 export async function publishFatality(id: number) {
@@ -152,6 +214,24 @@ export async function publishFatality(id: number) {
   const { error } = await adminClient
     .from("fatalities")
     .update({ status: "published" })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { ok: true, mode: "service-role" as const };
+}
+
+export async function updateFatalityById(id: number, input: Partial<Fatality>) {
+  const adminClient = getAdminClient();
+  if (!adminClient) {
+    throw new Error("Missing valid SUPABASE_SERVICE_ROLE_KEY in server environment.");
+  }
+
+  const { error } = await adminClient
+    .from("fatalities")
+    .update(input)
     .eq("id", id);
 
   if (error) {

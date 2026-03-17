@@ -27,6 +27,20 @@ body {
   }
 
   .neo-input {
-    @apply w-full border-[3px] border-black bg-white px-3 py-2 font-medium outline-none focus:bg-yellow-50;
+    @apply w-full border-[3px] border-black bg-white px-3 py-2 font-medium text-black caret-black outline-none placeholder:text-neutral-500 focus:bg-yellow-50;
+  }
+
+  .noir-shell {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .noir-card {
+    @apply border-[3px] border-accent bg-[#1A1A1A] p-5;
+    box-shadow: 8px 8px 0px 0px #eab308;
+  }
+
+  .founder-scar {
+    clip-path: polygon(0% 18%, 10% 8%, 20% 16%, 32% 4%, 45% 15%, 58% 5%, 70% 17%, 82% 6%, 100% 18%, 92% 34%, 100% 50%, 90% 63%, 100% 80%, 84% 92%, 69% 82%, 55% 96%, 42% 84%, 28% 94%, 16% 82%, 0% 80%, 9% 63%, 0% 50%, 8% 34%);
   }
 }

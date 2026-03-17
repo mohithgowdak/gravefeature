@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Feature Fatality",
+  title: "FeatureGrave",
   description: "A startup feature forensic database",
 };
 

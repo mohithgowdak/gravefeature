@@ -1,7 +1,8 @@
-import { CheckCircle2 } from "lucide-react";
+import { BadgeAlert, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { CommentForm } from "@/components/comment-form";
-import { getFatalityById } from "@/lib/supabase";
+import { LessonLearned } from "@/components/lesson-learned";
+import { getCommentsByFatalityId, getFatalityById } from "@/lib/supabase";
 
 interface DetailPageProps {
   params: { id: string };
@@ -23,6 +24,7 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
   if (!fatality) {
     notFound();
   }
+  const comments = await getCommentsByFatalityId(fatality.id);
 
   const stats = [
     { label: "Brand", value: fatality.brand },
@@ -31,6 +33,106 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
     { label: "Loss", value: fatality.total_loss },
     { label: "Lifecycle", value: `${fatality.start_year} - ${fatality.end_year}` },
   ];
+
+  const crucialLesson = (
+    fatality.type === "project"
+      ? fatality.reality_check || fatality.startup_learnings
+      : fatality.startup_learnings
+  )
+    .split(".")[0]
+    .trim()
+    .concat(".");
+
+  if (fatality.type === "project") {
+    return (
+      <article className="noir-shell min-h-screen space-y-8 p-4 lg:p-6">
+        <section className="noir-card">
+          <p className="inline-block border-2 border-accent bg-accent px-2 py-1 text-xs font-black uppercase text-black">
+            Founder&apos;s Confessional
+          </p>
+          <div className="mt-3 flex items-center gap-3">
+            <span className="founder-scar inline-flex h-10 w-10 items-center justify-center bg-accent text-black">
+              <BadgeAlert className="h-5 w-5" />
+            </span>
+            <h1 className="text-4xl font-black uppercase">{fatality.title}</h1>
+          </div>
+          <p className="mt-3 max-w-4xl font-medium text-white/90">{fatality.intro_text}</p>
+          <div className="mt-5 grid gap-3 md:grid-cols-5">
+            {stats.map((item) => (
+              <div key={item.label} className="border-[3px] border-accent bg-[#1A1A1A] p-3">
+                <p className="text-xs font-black uppercase text-accent">{item.label}</p>
+                <p className="mt-1 text-sm font-semibold text-white">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="noir-card space-y-3">
+          <h2 className="text-2xl font-black uppercase text-accent">The Project</h2>
+          <p className="font-medium text-white/90">
+            {fatality.project_vision || fatality.market_potential}
+          </p>
+        </section>
+
+        <section className="noir-card">
+          <h2 className="text-xl font-black uppercase text-accent">The Burn</h2>
+          <p className="mt-2 text-lg font-black">{fatality.resources_burned || fatality.total_loss}</p>
+        </section>
+
+        <section className="noir-card">
+          <h2 className="text-2xl font-black uppercase text-accent">The Pivot I Missed</h2>
+          <p className="mt-2 font-medium text-white/90">
+            {fatality.missed_pivot || fatality.pivot_concept}
+          </p>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {analysisKeys.map((item) => (
+            <div key={item.key} className="noir-card">
+              <h2 className="text-sm font-black uppercase text-accent">{item.label}</h2>
+              <p className="mt-2 text-sm font-semibold text-white">
+                {fatality[item.key as keyof typeof fatality] as string}
+              </p>
+            </div>
+          ))}
+        </section>
+
+        <section className="noir-card">
+          <h2 className="text-2xl font-black uppercase text-accent">Execution Timeline</h2>
+          <div className="mt-3 space-y-3">
+            {fatality.execution_plan.map((step, index) => (
+              <div key={`${step.step}-${index}`} className="border-2 border-accent bg-[#1A1A1A] p-3">
+                <p className="text-xs font-black uppercase text-accent">Step {index + 1}</p>
+                <p className="mt-1 font-bold text-white">{step.step}</p>
+                <p className="text-sm font-medium text-white/90">{step.detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="noir-card space-y-4">
+          <h2 className="text-2xl font-black uppercase text-accent">Rebuild Stack</h2>
+          <div className="flex flex-wrap gap-2">
+            {fatality.suggested_tech.map((tech) => (
+              <span
+                key={tech}
+                className="border-2 border-accent bg-[#1A1A1A] px-3 py-1 text-xs font-black uppercase text-accent"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+          <div>
+            <h3 className="text-sm font-black uppercase text-accent">Monetization Strategy</h3>
+            <p className="mt-1 font-medium text-white/90">{fatality.monetization_strategy}</p>
+          </div>
+        </section>
+
+        <CommentForm fatalityId={fatality.id} initialComments={comments} />
+        <LessonLearned lesson={crucialLesson} />
+      </article>
+    );
+  }
 
   return (
     <article className="space-y-8">
@@ -103,7 +205,8 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
         </div>
       </section>
 
-      <CommentForm fatalityId={fatality.id} />
+      <CommentForm fatalityId={fatality.id} initialComments={comments} />
+      <LessonLearned lesson={crucialLesson} />
     </article>
   );
 }

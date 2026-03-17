@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { FatalityType } from "@/lib/types";
 
 type FormState = {
+  type: FatalityType;
   title: string;
   brand: string;
   sector: string;
@@ -24,9 +26,14 @@ type FormState = {
   author_name: string;
   author_role: string;
   is_ai_victim: boolean;
+  project_vision: string;
+  resources_burned: string;
+  reality_check: string;
+  missed_pivot: string;
 };
 
 const initialState: FormState = {
+  type: "feature",
   title: "",
   brand: "",
   sector: "",
@@ -48,6 +55,10 @@ const initialState: FormState = {
   author_name: "",
   author_role: "",
   is_ai_victim: false,
+  project_vision: "",
+  resources_burned: "",
+  reality_check: "",
+  missed_pivot: "",
 };
 
 export function SubmitWizard() {
@@ -84,11 +95,28 @@ export function SubmitWizard() {
       .filter(Boolean);
 
     try {
+      const normalizedPayload = {
+        ...form,
+        type: form.type,
+        failure_analysis:
+          form.type === "feature" ? form.failure_analysis : form.reality_check || form.failure_analysis,
+        market_analysis:
+          form.type === "feature" ? form.market_analysis : form.market_analysis || form.resources_burned,
+        startup_learnings:
+          form.type === "feature" ? form.startup_learnings : form.startup_learnings || form.missed_pivot,
+        market_potential:
+          form.type === "feature" ? form.market_potential : form.market_potential || form.project_vision,
+        project_vision: form.type === "project" ? form.project_vision : null,
+        resources_burned: form.type === "project" ? form.resources_burned : null,
+        reality_check: form.type === "project" ? form.reality_check : null,
+        missed_pivot: form.type === "project" ? form.missed_pivot : null,
+      };
+
       const response = await fetch("/api/fatalities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...form,
+          ...normalizedPayload,
           execution_plan,
           suggested_tech,
           status: "draft",
@@ -114,8 +142,36 @@ export function SubmitWizard() {
   return (
     <form onSubmit={onSubmit} className="neo-card space-y-6">
       <div className="flex items-center justify-between border-2 border-black bg-accent p-3">
-        <h2 className="text-xl font-black uppercase">Submit a Fatal Feature</h2>
+        <h2 className="text-xl font-black uppercase">
+          Submit a {form.type === "feature" ? "Fatal Feature" : "Founder Confessional"}
+        </h2>
         <span className="text-sm font-black">{progress}</span>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-black uppercase">
+          Are you reporting a Feature or a Project?
+        </p>
+        <div className="flex gap-2">
+          <button
+            className={`border-[3px] border-black px-3 py-2 text-xs font-black uppercase ${
+              form.type === "feature" ? "bg-accent shadow-brutal" : "bg-white"
+            }`}
+            onClick={() => update("type", "feature")}
+            type="button"
+          >
+            FeatureGrave
+          </button>
+          <button
+            className={`border-[3px] border-black px-3 py-2 text-xs font-black uppercase ${
+              form.type === "project" ? "bg-accent shadow-brutal" : "bg-white"
+            }`}
+            onClick={() => update("type", "project")}
+            type="button"
+          >
+            Founder&apos;s Confessional
+          </button>
+        </div>
       </div>
 
       {step === 1 && (
@@ -185,30 +241,50 @@ export function SubmitWizard() {
         <div className="grid gap-3">
           <textarea
             className="neo-input"
-            placeholder="Failure Analysis"
-            value={form.failure_analysis}
-            onChange={(event) => update("failure_analysis", event.target.value)}
+            placeholder={form.type === "feature" ? "Failure Analysis" : "The Project Vision"}
+            value={form.type === "feature" ? form.failure_analysis : form.project_vision}
+            onChange={(event) =>
+              update(
+                form.type === "feature" ? "failure_analysis" : "project_vision",
+                event.target.value,
+              )
+            }
             required
           />
           <textarea
             className="neo-input"
-            placeholder="Market Analysis"
-            value={form.market_analysis}
-            onChange={(event) => update("market_analysis", event.target.value)}
+            placeholder={form.type === "feature" ? "Market Analysis" : "Resources Burned"}
+            value={form.type === "feature" ? form.market_analysis : form.resources_burned}
+            onChange={(event) =>
+              update(
+                form.type === "feature" ? "market_analysis" : "resources_burned",
+                event.target.value,
+              )
+            }
             required
           />
           <textarea
             className="neo-input"
-            placeholder="Startup Learnings"
-            value={form.startup_learnings}
-            onChange={(event) => update("startup_learnings", event.target.value)}
+            placeholder={form.type === "feature" ? "Startup Learnings" : "Reality Check"}
+            value={form.type === "feature" ? form.startup_learnings : form.reality_check}
+            onChange={(event) =>
+              update(
+                form.type === "feature" ? "startup_learnings" : "reality_check",
+                event.target.value,
+              )
+            }
             required
           />
           <textarea
             className="neo-input"
-            placeholder="Market Potential"
-            value={form.market_potential}
-            onChange={(event) => update("market_potential", event.target.value)}
+            placeholder={form.type === "feature" ? "Market Potential" : "The Pivot I Missed"}
+            value={form.type === "feature" ? form.market_potential : form.missed_pivot}
+            onChange={(event) =>
+              update(
+                form.type === "feature" ? "market_potential" : "missed_pivot",
+                event.target.value,
+              )
+            }
             required
           />
           <input
@@ -232,7 +308,7 @@ export function SubmitWizard() {
         <div className="grid gap-3">
           <textarea
             className="neo-input"
-            placeholder="Pivot Concept"
+            placeholder={form.type === "feature" ? "Pivot Concept" : "The Pivot I Missed (summary)"}
             value={form.pivot_concept}
             onChange={(event) => update("pivot_concept", event.target.value)}
             required

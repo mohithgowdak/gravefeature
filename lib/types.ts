@@ -1,8 +1,10 @@
 export type PublishStatus = "draft" | "published";
+export type FatalityType = "feature" | "project";
 
 export interface Fatality {
   id: number;
   created_at?: string;
+  type: FatalityType;
   title: string;
   brand: string;
   sector: string;
@@ -25,6 +27,10 @@ export interface Fatality {
   author_role: string;
   is_ai_victim: boolean;
   status: PublishStatus;
+  project_vision?: string | null;
+  resources_burned?: string | null;
+  reality_check?: string | null;
+  missed_pivot?: string | null;
 }
 
 export interface CommentInput {
@@ -32,4 +38,9 @@ export interface CommentInput {
   name: string;
   email: string;
   comment: string;
+}
+
+export interface CommunityComment extends CommentInput {
+  id: string;
+  created_at?: string;
 }
