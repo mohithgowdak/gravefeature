@@ -1,5 +1,6 @@
 import { BadgeAlert, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { CaseActions } from "@/components/case-actions";
 import { CommentForm } from "@/components/comment-form";
 import { LessonLearned } from "@/components/lesson-learned";
 import { getCommentsByFatalityId, getFatalityById } from "@/lib/supabase";
@@ -70,6 +71,12 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
               </div>
             ))}
           </div>
+          <CaseActions
+            caseId={fatality.id}
+            title={fatality.title}
+            variant="dark"
+            className="mt-4"
+          />
         </section>
 
         <section className="noir-card space-y-3">
@@ -171,6 +178,7 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
             </div>
           ))}
         </div>
+        <CaseActions caseId={fatality.id} title={fatality.title} className="mt-4" />
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

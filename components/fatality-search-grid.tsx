@@ -1,31 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { CaseActions } from "@/components/case-actions";
+import { readSavedCaseIds } from "@/lib/saved-cases";
 import { Fatality, FatalityType } from "@/lib/types";
 
 interface FatalitySearchGridProps {
   fatalities: Fatality[];
 }
 
-type FilterValue = "all" | FatalityType;
+type FilterValue = "all" | FatalityType | "saved";
 
 export function FatalitySearchGrid({ fatalities }: FatalitySearchGridProps) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterValue>("all");
+  const [savedIds, setSavedIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    setSavedIds(readSavedCaseIds());
+
+    const onSavedCasesUpdated = () => setSavedIds(readSavedCaseIds());
+    window.addEventListener("featuregrave:saved-cases-updated", onSavedCasesUpdated);
+    window.addEventListener("storage", onSavedCasesUpdated);
+
+    return () => {
+      window.removeEventListener("featuregrave:saved-cases-updated", onSavedCasesUpdated);
+      window.removeEventListener("storage", onSavedCasesUpdated);
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
     return fatalities.filter((item) => {
-      const matchesFilter = filter === "all" ? true : item.type === filter;
+      const matchesFilter =
+        filter === "all" ? true : filter === "saved" ? savedIds.includes(item.id) : item.type === filter;
       if (!matchesFilter) return false;
       if (!normalized) return true;
 
       const haystack = `${item.title} ${item.brand} ${item.sector} ${item.product_type}`.toLowerCase();
       return haystack.includes(normalized);
     });
-  }, [fatalities, filter, query]);
+  }, [fatalities, filter, query, savedIds]);
 
   return (
     <section className="space-y-4">
@@ -65,16 +82,27 @@ export function FatalitySearchGrid({ fatalities }: FatalitySearchGridProps) {
             >
               Confessional
             </button>
+            <button
+              className={`border-[3px] border-black px-3 py-2 text-xs font-black uppercase ${
+                filter === "saved" ? "bg-accent shadow-brutal" : "bg-white"
+              }`}
+              onClick={() => {
+                setSavedIds(readSavedCaseIds());
+                setFilter("saved");
+              }}
+              type="button"
+            >
+              Saved ({savedIds.length})
+            </button>
           </div>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {filtered.map((item) => (
-          <Link
+          <article
             key={item.id}
-            href={`/fatalities/${item.id}`}
-            className="neo-card transition-all hover:-translate-y-1 hover:bg-accent"
+            className="neo-card transition-all hover:-translate-y-1"
           >
             <p className="text-xs font-black uppercase">{item.sector}</p>
             <h2 className="mt-2 text-2xl font-black uppercase">{item.brand}</h2>
@@ -94,7 +122,16 @@ export function FatalitySearchGrid({ fatalities }: FatalitySearchGridProps) {
                 </span>
               )}
             </div>
-          </Link>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <Link
+                href={`/fatalities/${item.id}`}
+                className="inline-flex items-center border-2 border-black bg-accent px-3 py-1 text-xs font-black uppercase shadow-brutal"
+              >
+                Read Case
+              </Link>
+              <CaseActions caseId={item.id} title={item.title} />
+            </div>
+          </article>
         ))}
       </div>
 
