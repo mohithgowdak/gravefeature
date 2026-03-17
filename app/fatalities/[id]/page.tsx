@@ -140,6 +140,8 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
           </div>
         </section>
 
+        <LessonLearned lesson={crucialLesson} />
+
         <section className="noir-card">
           <h2 className="text-sm font-black uppercase text-accent">Author</h2>
           <p className="mt-2 text-lg font-black text-white">{fatality.author_name}</p>
@@ -157,7 +159,6 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
         </section>
 
         <CommentForm fatalityId={fatality.id} initialComments={comments} />
-        <LessonLearned lesson={crucialLesson} />
       </article>
     );
   }
@@ -234,6 +235,8 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
         </div>
       </section>
 
+      <LessonLearned lesson={crucialLesson} />
+
       <section className="neo-card">
         <h2 className="text-sm font-black uppercase">Author</h2>
         <p className="mt-2 text-lg font-black">{fatality.author_name}</p>
@@ -251,7 +254,6 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
       </section>
 
       <CommentForm fatalityId={fatality.id} initialComments={comments} />
-      <LessonLearned lesson={crucialLesson} />
     </article>
   );
 }
