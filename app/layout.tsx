@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Sidebar } from "@/components/sidebar";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <Sidebar />
         <main className="min-h-screen px-4 py-6 lg:ml-72 lg:px-8">{children}</main>
+        <SpeedInsights />
       </body>
     </html>
   );
