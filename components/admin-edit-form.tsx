@@ -31,6 +31,7 @@ type FormState = {
   suggested_tech: string;
   author_name: string;
   author_role: string;
+  author_linkedin: string;
   is_ai_victim: boolean;
   project_vision: string;
   resources_burned: string;
@@ -77,6 +78,7 @@ export function AdminEditForm({ fatality }: AdminEditFormProps) {
       suggested_tech: toTechText(fatality),
       author_name: fatality.author_name,
       author_role: fatality.author_role,
+      author_linkedin: fatality.author_linkedin ?? "",
       is_ai_victim: fatality.is_ai_victim,
       project_vision: fatality.project_vision ?? "",
       resources_burned: fatality.resources_burned ?? "",
@@ -131,6 +133,7 @@ export function AdminEditForm({ fatality }: AdminEditFormProps) {
           ...form,
           execution_plan,
           suggested_tech,
+          author_linkedin: form.author_linkedin.trim() || null,
           project_vision: form.project_vision || null,
           resources_burned: form.resources_burned || null,
           reality_check: form.reality_check || null,
@@ -198,6 +201,7 @@ export function AdminEditForm({ fatality }: AdminEditFormProps) {
         <input className="neo-input md:col-span-2" value={form.suggested_tech} onChange={(e) => update("suggested_tech", e.target.value)} placeholder="Suggested tech comma-separated" />
         <input className="neo-input" value={form.author_name} onChange={(e) => update("author_name", e.target.value)} placeholder="Author name" />
         <input className="neo-input" value={form.author_role} onChange={(e) => update("author_role", e.target.value)} placeholder="Author role" />
+        <input className="neo-input md:col-span-2" value={form.author_linkedin} onChange={(e) => update("author_linkedin", e.target.value)} placeholder="Author LinkedIn URL (optional)" type="url" />
         <textarea className="neo-input md:col-span-2" value={form.project_vision} onChange={(e) => update("project_vision", e.target.value)} placeholder="Project vision (project type)" />
         <textarea className="neo-input md:col-span-2" value={form.resources_burned} onChange={(e) => update("resources_burned", e.target.value)} placeholder="Resources burned (project type)" />
         <textarea className="neo-input md:col-span-2" value={form.reality_check} onChange={(e) => update("reality_check", e.target.value)} placeholder="Reality check (project type)" />

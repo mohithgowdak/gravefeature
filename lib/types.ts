@@ -25,6 +25,7 @@ export interface Fatality {
   suggested_tech: string[];
   author_name: string;
   author_role: string;
+  author_linkedin?: string | null;
   is_ai_victim: boolean;
   status: PublishStatus;
   project_vision?: string | null;

@@ -25,6 +25,7 @@ type FormState = {
   suggested_tech: string;
   author_name: string;
   author_role: string;
+  author_linkedin: string;
   is_ai_victim: boolean;
   project_vision: string;
   resources_burned: string;
@@ -54,6 +55,7 @@ const initialState: FormState = {
   suggested_tech: "",
   author_name: "",
   author_role: "",
+  author_linkedin: "",
   is_ai_victim: false,
   project_vision: "",
   resources_burned: "",
@@ -106,6 +108,7 @@ export function SubmitWizard() {
           form.type === "feature" ? form.startup_learnings : form.startup_learnings || form.missed_pivot,
         market_potential:
           form.type === "feature" ? form.market_potential : form.market_potential || form.project_vision,
+        author_linkedin: form.author_linkedin.trim() || null,
         project_vision: form.type === "project" ? form.project_vision : null,
         resources_burned: form.type === "project" ? form.resources_burned : null,
         reality_check: form.type === "project" ? form.reality_check : null,
@@ -347,6 +350,13 @@ export function SubmitWizard() {
             value={form.author_role}
             onChange={(event) => update("author_role", event.target.value)}
             required
+          />
+          <input
+            className="neo-input"
+            placeholder="LinkedIn URL (optional)"
+            value={form.author_linkedin}
+            onChange={(event) => update("author_linkedin", event.target.value)}
+            type="url"
           />
           <label className="flex items-center gap-2 text-sm font-semibold">
             <input

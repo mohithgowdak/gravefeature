@@ -24,6 +24,7 @@ create table if not exists fatalities (
   suggested_tech jsonb not null default '[]'::jsonb,
   author_name text not null,
   author_role text not null,
+  author_linkedin text,
   is_ai_victim boolean not null default false,
   status text not null check (status in ('draft', 'published')),
   project_vision text,
@@ -37,6 +38,7 @@ alter table fatalities add column if not exists project_vision text;
 alter table fatalities add column if not exists resources_burned text;
 alter table fatalities add column if not exists reality_check text;
 alter table fatalities add column if not exists missed_pivot text;
+alter table fatalities add column if not exists author_linkedin text;
 alter table fatalities alter column type set default 'feature';
 update fatalities set type = 'feature' where type is null;
 do $$

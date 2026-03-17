@@ -25,6 +25,11 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
     notFound();
   }
   const comments = await getCommentsByFatalityId(fatality.id);
+  const linkedinHref = fatality.author_linkedin?.trim()
+    ? fatality.author_linkedin.startsWith("http")
+      ? fatality.author_linkedin
+      : `https://${fatality.author_linkedin}`
+    : null;
 
   const stats = [
     { label: "Brand", value: fatality.brand },
@@ -128,6 +133,22 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
           </div>
         </section>
 
+        <section className="noir-card">
+          <h2 className="text-sm font-black uppercase text-accent">Author</h2>
+          <p className="mt-2 text-lg font-black text-white">{fatality.author_name}</p>
+          <p className="text-sm font-semibold text-white/90">{fatality.author_role}</p>
+          {linkedinHref && (
+            <a
+              className="mt-2 inline-block text-sm font-black uppercase text-accent underline"
+              href={linkedinHref}
+              rel="noreferrer"
+              target="_blank"
+            >
+              LinkedIn Profile
+            </a>
+          )}
+        </section>
+
         <CommentForm fatalityId={fatality.id} initialComments={comments} />
         <LessonLearned lesson={crucialLesson} />
       </article>
@@ -203,6 +224,22 @@ export default async function FatalityDetailPage({ params }: DetailPageProps) {
           <h3 className="text-sm font-black uppercase">Monetization Strategy</h3>
           <p className="mt-1 font-medium">{fatality.monetization_strategy}</p>
         </div>
+      </section>
+
+      <section className="neo-card">
+        <h2 className="text-sm font-black uppercase">Author</h2>
+        <p className="mt-2 text-lg font-black">{fatality.author_name}</p>
+        <p className="text-sm font-semibold">{fatality.author_role}</p>
+        {linkedinHref && (
+          <a
+            className="mt-2 inline-block text-sm font-black uppercase underline"
+            href={linkedinHref}
+            rel="noreferrer"
+            target="_blank"
+          >
+            LinkedIn Profile
+          </a>
+        )}
       </section>
 
       <CommentForm fatalityId={fatality.id} initialComments={comments} />
