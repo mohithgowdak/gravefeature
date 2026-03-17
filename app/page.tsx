@@ -65,6 +65,9 @@ export default function LandingPage() {
             Submit a Case
           </Link>
         </div>
+        <p className="mt-4 inline-block border-2 border-black bg-white px-3 py-1 text-xs font-black uppercase">
+          New Case every Wednesday, 10 PM
+        </p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2">
